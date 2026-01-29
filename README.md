@@ -28,8 +28,8 @@ O objetivo é simples: **Não deixe a energia acabar!**
 
 ### Níveis de Dificuldade
 
-🟢 **Nível 1 (Fácil):** Poucos prédios, consumo baixo. Ideal para aprender.
-🟡 **Nível 2 (Médio):** Mais prédios, consumo acelerado e energia inicial reduzida.
+🟢 **Nível 1 (Fácil):** Poucos prédios, consumo baixo. Ideal para aprender. <br>
+🟡 **Nível 2 (Médio):** Mais prédios, consumo acelerado e energia inicial reduzida. <br>
 🔴 **Nível 3 (Difícil):** Zona industrial com alto consumo. Requer cliques rápidos e estratégia!
 
 ---
