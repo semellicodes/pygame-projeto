@@ -12,8 +12,8 @@
 
 O projeto foi desenvolvido alinhado com os **Objetivos de Desenvolvimento Sustentável (ODS)** da ONU:
 
-- **ODS 7:** Energia Limpa e Acessível.
-- **ODS 13:** Ação Contra a Mudança Global do Clima.
+**ODS 7:** Energia Limpa e Acessível.
+**ODS 13:** Ação Contra a Mudança Global do Clima.
 
 ---
 
@@ -28,9 +28,9 @@ O objetivo é simples: **Não deixe a energia acabar!**
 
 ### Níveis de Dificuldade
 
-- 🟢 **Nível 1 (Fácil):** Poucos prédios, consumo baixo. Ideal para aprender.
-- 🟡 **Nível 2 (Médio):** Mais prédios, consumo acelerado e energia inicial reduzida.
-- 🔴 **Nível 3 (Difícil):** Zona industrial com alto consumo. Requer cliques rápidos e estratégia!
+🟢 **Nível 1 (Fácil):** Poucos prédios, consumo baixo. Ideal para aprender.
+🟡 **Nível 2 (Médio):** Mais prédios, consumo acelerado e energia inicial reduzida.
+🔴 **Nível 3 (Difícil):** Zona industrial com alto consumo. Requer cliques rápidos e estratégia!
 
 ---
 
@@ -60,8 +60,8 @@ Siga os passos abaixo para rodar o projeto na sua máquina:
 
 ### Pré-requisitos
 
-- Ter o [Python](https://www.python.org/) instalado.
-- Ter a biblioteca `pygame` instalada.
+Ter o [Python](https://www.python.org/) instalado.
+Ter a biblioteca `pygame` instalada.
 
 ### Instalação
 
