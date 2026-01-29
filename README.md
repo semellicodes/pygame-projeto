@@ -12,7 +12,7 @@
 
 O projeto foi desenvolvido alinhado com os **Objetivos de Desenvolvimento Sustentável (ODS)** da ONU:
 
-**ODS 7:** Energia Limpa e Acessível.
+**ODS 7:** Energia Limpa e Acessível. <br>
 **ODS 13:** Ação Contra a Mudança Global do Clima.
 
 ---
