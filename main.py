@@ -76,8 +76,8 @@ class Building:
     def install_solar(self):
         if not self.has_solar:
             self.has_solar = True
-            # Geração um pouco maior para compensar o consumo alto
-            self.solar_generation = 20 + random.randint(-2, 5)
+            # Geração ajustada (Média de 23 por painel)
+            self.solar_generation = 22 + random.randint(-2, 5)
             self.install_animation = 1.0
             return True
         return False
@@ -199,13 +199,13 @@ class Game:
         try: pygame.mixer.music.set_volume(MUSIC_VOL_NORMAL)
         except: pass
 
-        # --- ESCADA DE DIFICULDADE REAJUSTADA ---
+        # --- REAJUSTE DE DIFICULDADE (ENERGIA INICIAL) ---
         if self.level == 1:
             self.energy_total = 100 # Fácil
         elif self.level == 2:
-            self.energy_total = 80  # Médio (Era 90) - Agora o começo é mais tenso
+            self.energy_total = 70  # Médio (Começa com 70% de bateria)
         elif self.level == 3:
-            self.energy_total = 60  # Difícil (Era 85) - Tem que correr!
+            self.energy_total = 50  # Hardcore (Começa com 50% de bateria)
 
         self.time = 0
         self.sun_level = 1.0
@@ -233,28 +233,31 @@ class Game:
         start_x = 150
         for i in range(3):
             self.buildings.append(Building(start_x + i * spacing, 420, 160, 200, f"Casa {i+1}", 3, BUILDING_COLORS[i]))
-        self.target_time = 8
+        self.target_time = 5 # 5 Segundos (Muito rápido para terminar)
 
     def create_level_2(self):
         spacing = 200
         start_x = 100
         names = ["Casa", "Escola", "Loja", "Mercado", "Hospital"]
-        # --- AUMENTO DE DIFICULDADE (Fase Média) ---
-        # Consumo aumentado para forçar o jogador a agir rápido
-        consumptions = [8, 10, 8, 9, 10]
+        # --- AUMENTO DE CONSUMO PARA EXIGIR 3 PAINÉIS ---
+        consumptions = [12, 11, 13, 12, 11]
         for i in range(5):
             self.buildings.append(Building(start_x + i * spacing, 400 + random.randint(-20, 20), 140, 210, names[i], consumptions[i], BUILDING_COLORS[i]))
-        self.target_time = 10
+
+        # --- TEMPO REDUZIDO PARA PRESSÃO ---
+        self.target_time = 7 # Era 10s, agora 7s (Tempestade vem rápido)
 
     def create_level_3(self):
         spacing = 140
         start_x = 50
         names = ["Fábrica 1", "Indústria", "Usinagem", "Depósito", "DataCenter", "Metalúrgica", "Refinaria", "Complexo"]
-        # Fase Difícil: Consumo moderado/alto, mas com MUITOS prédios e POUCA energia inicial
-        consumptions = [5, 6, 7, 5, 8, 7, 8, 6]
+        # Consumo aumentado para nível difícil
+        consumptions = [6, 7, 8, 6, 9, 8, 9, 7]
         for i in range(8):
             self.buildings.append(Building(start_x + i * spacing, 390 + random.randint(-30, 30), 120, 220, names[i], consumptions[i], BUILDING_COLORS[i]))
-        self.target_time = 12
+
+        # --- TEMPO REDUZIDO AINDA MAIS ---
+        self.target_time = 9 # Era 10s, agora 9s (Muito rápido para 8 prédios)
 
     def update_rain(self, dt):
         if not self.storm_active:
@@ -305,6 +308,19 @@ class Game:
             if net_energy > 0:
                 self.points += dt * 10
 
+            # --- CHECAGEM DE VITÓRIA IMEDIATA (SPEEDRUN) ---
+            if self.panels_installed == len(self.buildings):
+                # Bônus massivo pelo tempo que sobrou
+                time_left = self.target_time - self.time
+                self.points += time_left * 100
+                self.time = self.target_time # Ajusta tempo visual para 100%
+
+                self.state = "victory"
+                try: pygame.mixer.music.set_volume(MUSIC_VOL_LOW)
+                except: pass
+                if self.sfx_victory: self.sfx_victory.play()
+                return # Sai da função
+
             # GAME OVER: Falta de energia
             if self.energy_total <= 0:
                 self.energy_total = 0
@@ -314,27 +330,21 @@ class Game:
                 if self.sfx_defeat: self.sfx_defeat.play()
 
         else:
-            # O TEMPO ACABOU
-            if self.panels_installed == len(self.buildings):
-                self.state = "victory"
+            # O TEMPO ACABOU -> TEMPESTADE IMEDIATA
+            if not self.storm_active:
+                self.storm_active = True
+                self.sun_level = 0.3
+                self.game_over_delay_timer = 0
                 try: pygame.mixer.music.set_volume(MUSIC_VOL_LOW)
                 except: pass
-                if self.sfx_victory: self.sfx_victory.play()
-            else:
-                # TEMPESTADE FINAL
-                if not self.storm_active:
-                    self.storm_active = True
-                    self.sun_level = 0.3
-                    self.game_over_delay_timer = 0
-                    try: pygame.mixer.music.set_volume(MUSIC_VOL_LOW)
-                    except: pass
-                    if self.sfx_thunder: self.sfx_thunder.play()
+                if self.sfx_thunder: self.sfx_thunder.play()
 
-                self.game_over_delay_timer += dt
+            self.game_over_delay_timer += dt
 
-                if self.game_over_delay_timer >= 3.0:
-                    self.state = "gameover"
-                    if self.sfx_defeat: self.sfx_defeat.play()
+            # Se a tempestade durar 3 segundos, Game Over
+            if self.game_over_delay_timer >= 3.0:
+                self.state = "gameover"
+                if self.sfx_defeat: self.sfx_defeat.play()
 
     def draw(self, surface):
         if self.state == "menu":
@@ -631,7 +641,7 @@ class Game:
             color = (r, 0, 0)
             pygame.draw.line(surface, color, (0, y), (WIDTH, y))
 
-        # Painel central (Fundo avermelhado transparente)
+        # Painel central
         panel = pygame.Surface((700, 550), pygame.SRCALPHA)
         pygame.draw.rect(panel, (50, 0, 0, 200), (0, 0, 700, 550), border_radius=30)
         # Borda vermelha brilhante
