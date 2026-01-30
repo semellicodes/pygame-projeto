@@ -426,87 +426,106 @@ class Game:
             color = tuple(int(SKY_BLUE[i] * (1 - factor * 0.3)) for i in range(3))
             pygame.draw.line(surface, color, (0, y), (WIDTH, y))
 
-        panel = pygame.Surface((1000, 700), pygame.SRCALPHA)
-        pygame.draw.rect(panel, (255, 255, 255, 250), (0, 0, 1000, 700), border_radius=30)
-        surface.blit(panel, (WIDTH//2 - 500, 50))
+        # Painel de fundo
+        panel = pygame.Surface((1100, 720), pygame.SRCALPHA) # Aumentei um pouco a largura do painel
+        pygame.draw.rect(panel, (255, 255, 255, 250), (0, 0, 1100, 720), border_radius=30)
+        surface.blit(panel, (WIDTH//2 - 550, 40))
 
-        font_title = pygame.font.Font(None, 60)
-        font_subtitle = pygame.font.Font(None, 32)
-        font_normal = pygame.font.Font(None, 25)
-        font_small = pygame.font.Font(None, 22)
+        font_title = pygame.font.Font(None, 70)
+        font_subtitle = pygame.font.Font(None, 36)
+        font_normal = pygame.font.Font(None, 28) # Fonte um pouco maior
+        font_small = pygame.font.Font(None, 24)  # Fonte um pouco maior
 
         title = font_title.render("Como Jogar?", True, (30, 144, 255))
-        surface.blit(title, (WIDTH//2 - title.get_width()//2, 70))
+        surface.blit(title, (WIDTH//2 - title.get_width()//2, 60))
 
-        objective_bg = pygame.Surface((920, 50), pygame.SRCALPHA)
-        pygame.draw.rect(objective_bg, (76, 175, 80, 40), (0, 0, 920, 50), border_radius=15)
-        surface.blit(objective_bg, (WIDTH//2 - 460, 130))
+        # Faixa do Objetivo
+        objective_bg = pygame.Surface((1000, 50), pygame.SRCALPHA)
+        pygame.draw.rect(objective_bg, (76, 175, 80, 40), (0, 0, 1000, 50), border_radius=15)
+        surface.blit(objective_bg, (WIDTH//2 - 500, 120))
 
         objective = font_subtitle.render("OBJETIVO: Manter sua cidade iluminada com energia solar!", True, (76, 175, 80))
-        surface.blit(objective, (WIDTH//2 - objective.get_width()//2, 142))
+        surface.blit(objective, (WIDTH//2 - objective.get_width()//2, 132))
 
         instructions = [
             {
                 "title": "CONSUMO DE ENERGIA",
                 "desc": "Cada prédio da cidade consome energia constantemente.",
-                "detail": "A barra de energia no canto superior mostra quanto você tem.",
+                "detail": "A barra de energia no topo mostra quanto você tem.",
                 "color": (244, 67, 54)
             },
             {
                 "title": "PAINÉIS SOLARES",
-                "desc": "Clique com o mouse em qualquer prédio para instalar painéis.",
+                "desc": "Clique com o mouse nos prédios para instalar painéis.",
                 "detail": "Os painéis aparecem no teto e geram energia limpa!",
                 "color": (30, 144, 255)
             },
             {
                 "title": "GERAÇÃO DE ENERGIA",
-                "desc": "Painéis solares produzem energia quando o sol está brilhando.",
+                "desc": "Painéis produzem energia quando o sol está brilhando.",
                 "detail": "Quanto mais painéis, mais energia sua cidade terá!",
                 "color": (255, 193, 7)
             },
             {
                 "title": "CUIDADO COM APAGÕES",
-                "desc": "Se a energia chegar a ZERO, sua cidade fica no escuro!",
-                "detail": "Fique de olho na barra de energia e instale painéis rápido.",
+                "desc": "Se a energia chegar a ZERO, a cidade fica no escuro!",
+                "detail": "Fique de olho na barra e instale painéis rápido.",
                 "color": (156, 39, 176)
             },
             {
                 "title": "TEMPESTADES",
-                "desc": "Durante tempestades, painéis geram menos energia.",
+                "desc": "Durante tempestades, a geração de energia cai muito.",
                 "detail": "Instale painéis ANTES das tempestades aparecerem!",
                 "color": (255, 152, 0)
             },
             {
                 "title": "COMO VENCER",
                 "desc": "Sobreviva até o tempo alvo de cada nível.",
-                "detail": "Cada nível tem mais prédios e mais tempo!",
+                "detail": "Cada nível tem mais prédios e menos tempo!",
                 "color": (76, 175, 80)
             }
         ]
 
-        y = 210
-        margin_left = WIDTH//2 - 460
-        for inst in instructions:
-            title_text = font_normal.render(inst["title"], True, inst["color"])
-            surface.blit(title_text, (margin_left, y))
-            desc_text = font_small.render(inst["desc"], True, (40, 40, 40))
-            surface.blit(desc_text, (margin_left, y + 25))
-            detail_text = font_small.render(inst["detail"], True, (100, 100, 100))
-            surface.blit(detail_text, (margin_left, y + 45))
-            y += 75
+        # --- LÓGICA DE DUAS COLUNAS ---
+        start_y = 200
+        col_width = 480 # Largura de cada coluna
+        col_gap = 40    # Espaço entre colunas
+        left_x = WIDTH//2 - 500
+        right_x = WIDTH//2 + 20
 
-        tip_bg = pygame.Surface((920, 40), pygame.SRCALPHA)
-        pygame.draw.rect(tip_bg, (33, 150, 243, 40), (0, 0, 920, 40), border_radius=15)
-        surface.blit(tip_bg, (WIDTH//2 - 460, y + 10))
+        for i, inst in enumerate(instructions):
+            # Define se vai desenhar na esquerda (0,1,2) ou direita (3,4,5)
+            if i < 3:
+                x = left_x
+                y = start_y + (i * 140) # Espaçamento vertical
+            else:
+                x = right_x
+                y = start_y + ((i-3) * 140)
+
+            # Desenha o Bloco
+            title_text = font_normal.render(inst["title"], True, inst["color"])
+            surface.blit(title_text, (x, y))
+
+            desc_text = font_small.render(inst["desc"], True, (40, 40, 40))
+            surface.blit(desc_text, (x, y + 28))
+
+            detail_text = font_small.render(inst["detail"], True, (100, 100, 100))
+            surface.blit(detail_text, (x, y + 50))
+
+        # Dica final
+        tip_bg = pygame.Surface((1000, 40), pygame.SRCALPHA)
+        pygame.draw.rect(tip_bg, (33, 150, 243, 40), (0, 0, 1000, 40), border_radius=15)
+        surface.blit(tip_bg, (WIDTH//2 - 500, 630))
 
         tip = font_normal.render("DICA: Instale painéis em TODOS os prédios o mais rápido possível!", True, (33, 150, 243))
-        surface.blit(tip, (WIDTH//2 - tip.get_width()//2, y + 20))
+        surface.blit(tip, (WIDTH//2 - tip.get_width()//2, 640))
 
-        button_rect = pygame.Rect(WIDTH//2 - 150, 710, 300, 60)
+        # Botão Começar
+        button_rect = pygame.Rect(WIDTH//2 - 150, 685, 300, 60)
         pygame.draw.rect(surface, GRASS_GREEN, button_rect, border_radius=15)
         pygame.draw.rect(surface, DARK_GREEN, button_rect, 4, border_radius=15)
         continue_text = font_subtitle.render("COMEÇAR!", True, WHITE)
-        surface.blit(continue_text, (WIDTH//2 - continue_text.get_width()//2, 720))
+        surface.blit(continue_text, (WIDTH//2 - continue_text.get_width()//2, 705))
 
     def draw_game(self, surface):
         if self.storm_active:
